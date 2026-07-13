@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,16 @@ import PosterCard from "@/src/components/PosterCard";
 const GAP = 10;
 const PADDING = spacing.lg;
 
+const dedupe = (list: Poster[]) => {
+  const seen = new Set<string>();
+  return list.filter((i) => {
+    const k = `${i.media_type}:${i.id}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+};
+
 export default function CollectionDetail() {
   const { key } = useLocalSearchParams<{ key: string }>();
   const insets = useSafeAreaInsets();
@@ -29,20 +39,42 @@ export default function CollectionDetail() {
   const [pg, setPg] = useState<[string, string]>(["#26364a", "#0a0a0a"]);
   const [data, setData] = useState<Poster[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageRef = useRef(1);
+  const hasMore = useRef(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.collection(String(key));
+        const res = await api.collection(String(key), 1);
         setTitle(res.title);
         setPg(res.pg);
-        setData(res.results);
+        setData(dedupe(res.results));
+        hasMore.current = res.results.length > 0;
       } catch {
       } finally {
         setLoading(false);
       }
     })();
   }, [key]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || loading || !hasMore.current) return;
+    setLoadingMore(true);
+    const next = pageRef.current + 1;
+    try {
+      const res = await api.collection(String(key), next);
+      if (res.results.length === 0) {
+        hasMore.current = false;
+      } else {
+        pageRef.current = next;
+        setData((prev) => dedupe([...prev, ...res.results]));
+      }
+    } catch {
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [key, loading, loadingMore]);
 
   const header = (
     <View style={styles.banner}>
@@ -82,6 +114,13 @@ export default function CollectionDetail() {
           columnWrapperStyle={{ gap: GAP, paddingHorizontal: PADDING }}
           contentContainerStyle={{ paddingBottom: 40, paddingTop: spacing.lg }}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.6}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator color={colors.accent} style={{ marginVertical: 20 }} />
+            ) : null
+          }
           renderItem={({ item }) => <PosterCard item={item} width={COL_W} />}
           ListEmptyComponent={
             <Text style={styles.empty}>Пока нет тайтлов в этой подборке.</Text>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,16 @@ import PosterCard from "@/src/components/PosterCard";
 const GAP = 10;
 const PADDING = spacing.lg;
 
+const dedupe = (list: Poster[]) => {
+  const seen = new Set<string>();
+  return list.filter((i) => {
+    const k = `${i.media_type}:${i.id}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+};
+
 export default function Search() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -27,8 +37,12 @@ export default function Search() {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Poster[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [searched, setSearched] = useState(false);
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pageRef = useRef(1);
+  const hasMore = useRef(true);
+  const queryRef = useRef("");
 
   useEffect(() => {
     if (debounce.current) clearTimeout(debounce.current);
@@ -40,9 +54,13 @@ export default function Search() {
     debounce.current = setTimeout(async () => {
       setLoading(true);
       setSearched(true);
+      pageRef.current = 1;
+      hasMore.current = true;
+      queryRef.current = q.trim();
       try {
-        const res = await api.search(q.trim());
-        setResults(res.results);
+        const res = await api.search(q.trim(), 1);
+        setResults(dedupe(res.results));
+        hasMore.current = res.results.length > 0;
       } catch {
         setResults([]);
       } finally {
@@ -53,6 +71,24 @@ export default function Search() {
       if (debounce.current) clearTimeout(debounce.current);
     };
   }, [q]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || loading || !hasMore.current || !queryRef.current) return;
+    setLoadingMore(true);
+    const next = pageRef.current + 1;
+    try {
+      const res = await api.search(queryRef.current, next);
+      if (res.results.length === 0) {
+        hasMore.current = false;
+      } else {
+        pageRef.current = next;
+        setResults((prev) => dedupe([...prev, ...res.results]));
+      }
+    } catch {
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loading, loadingMore]);
 
   return (
     <View style={styles.container}>
@@ -102,6 +138,13 @@ export default function Search() {
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.6}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator color={colors.accent} style={{ marginVertical: 20 }} />
+            ) : null
+          }
           renderItem={({ item }) => <PosterCard item={item} width={COL_W} />}
           ListEmptyComponent={
             <Text style={styles.empty}>Ничего не найдено</Text>

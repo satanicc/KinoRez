@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  useWindowDimensions,
   Share,
 } from "react-native";
 import { Image } from "expo-image";
@@ -20,7 +21,6 @@ import PosterCard from "@/src/components/PosterCard";
 import AppSheet from "@/src/components/AppSheet";
 import { useStore } from "@/src/store";
 
-const HERO_H = 300;
 const VOICES = [
   "Дубляж",
   "Universal Russia",
@@ -36,6 +36,8 @@ export default function Detail() {
   const { type, id } = useLocalSearchParams<{ type: string; id: string }>();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { height: winH } = useWindowDimensions();
+  const heroH = Math.max(380, Math.round(winH * 0.52));
   const { isBookmarked, toggleBookmark, pushRecent } = useStore();
 
   const [data, setData] = useState<DetailType | null>(null);
@@ -141,9 +143,9 @@ export default function Detail() {
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* hero */}
-        <View style={styles.hero}>
+        <View style={[styles.hero, { height: heroH }]}>
           {data.backdrop ? (
-            <Image source={{ uri: data.backdrop }} style={StyleSheet.absoluteFill} contentFit="cover" transition={300} />
+            <Image source={{ uri: data.backdrop }} style={StyleSheet.absoluteFill} contentFit="cover" contentPosition="center" transition={300} />
           ) : (
             <LinearGradient colors={["#26364a", colors.bg]} style={StyleSheet.absoluteFill} />
           )}
@@ -320,7 +322,7 @@ const styles = StyleSheet.create({
   errText: { color: colors.sub, fontSize: 14 },
   retryBtn: { backgroundColor: colors.accent, paddingHorizontal: 24, paddingVertical: 12, borderRadius: radius.md },
   retryText: { color: colors.white, fontWeight: "800" },
-  hero: { height: HERO_H, width: "100%", justifyContent: "flex-start" },
+  hero: { width: "100%", justifyContent: "flex-start" },
   topControls: { flexDirection: "row", justifyContent: "space-between", paddingHorizontal: spacing.lg },
   circleBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: "rgba(0,0,0,0.4)", alignItems: "center", justifyContent: "center" },
   heroTitle: { position: "absolute", bottom: spacing.md, left: 0, right: 0, color: colors.white, fontSize: 30, fontWeight: "900", paddingHorizontal: spacing.lg, textShadowColor: "rgba(0,0,0,0.5)", textShadowRadius: 14 },

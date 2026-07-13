@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,16 @@ const CHIPS = [
 const GAP = 10;
 const PADDING = spacing.lg;
 
+const dedupe = (list: Poster[]) => {
+  const seen = new Set<string>();
+  return list.filter((i) => {
+    const k = `${i.media_type}:${i.id}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+};
+
 export default function Home() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -35,20 +45,48 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageRef = useRef(1);
+  const hasMore = useRef(true);
 
-  const load = useCallback(async (kind: string, isRefresh = false) => {
-    if (!isRefresh) setLoading(true);
-    setError(false);
+  const load = useCallback(
+    async (kind: string, isRefresh = false) => {
+      if (!isRefresh) setLoading(true);
+      setError(false);
+      pageRef.current = 1;
+      hasMore.current = true;
+      try {
+        const res = await api.home(kind, 1);
+        setData(dedupe(res.results));
+        hasMore.current = res.results.length > 0;
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [],
+  );
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || loading || !hasMore.current) return;
+    setLoadingMore(true);
+    const next = pageRef.current + 1;
     try {
-      const res = await api.home(kind);
-      setData(res.results);
+      const res = await api.home(filter, next);
+      if (res.results.length === 0) {
+        hasMore.current = false;
+      } else {
+        pageRef.current = next;
+        setData((prev) => dedupe([...prev, ...res.results]));
+      }
     } catch {
-      setError(true);
+      // ignore, keep existing list
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      setLoadingMore(false);
     }
-  }, []);
+  }, [filter, loading, loadingMore]);
 
   useEffect(() => {
     load(filter);
@@ -120,6 +158,16 @@ export default function Home() {
             paddingBottom: 130,
           }}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.6}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator
+                color={colors.accent}
+                style={{ marginVertical: 20 }}
+              />
+            ) : null
+          }
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

@@ -61,6 +61,9 @@ def tmdb_get(path: str, params: Optional[dict] = None) -> dict:
         r.raise_for_status()
         return r.json()
     except requests.HTTPError as e:
+        status = e.response.status_code if e.response is not None else 502
+        if status == 404:
+            raise HTTPException(status_code=404, detail="Тайтл не найден")
         logger.error(f"TMDB HTTP error {path}: {e}")
         raise HTTPException(status_code=502, detail="Ошибка источника данных TMDB")
     except requests.RequestException as e:

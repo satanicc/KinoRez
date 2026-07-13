@@ -52,14 +52,18 @@ async function getJSON<T>(path: string): Promise<T> {
 }
 
 export const api = {
-  home: (kind: string) =>
-    getJSON<{ results: Poster[] }>(`/home?kind=${encodeURIComponent(kind)}`),
-  search: (q: string) =>
-    getJSON<{ results: Poster[] }>(`/search?q=${encodeURIComponent(q)}`),
+  home: (kind: string, page = 1) =>
+    getJSON<{ results: Poster[] }>(
+      `/home?kind=${encodeURIComponent(kind)}&page=${page}`,
+    ),
+  search: (q: string, page = 1) =>
+    getJSON<{ results: Poster[] }>(
+      `/search?q=${encodeURIComponent(q)}&page=${page}`,
+    ),
   collections: () => getJSON<{ results: Collection[] }>(`/collections`),
-  collection: (key: string) =>
+  collection: (key: string, page = 1) =>
     getJSON<{ title: string; pg: [string, string]; results: Poster[] }>(
-      `/collections/${encodeURIComponent(key)}`,
+      `/collections/${encodeURIComponent(key)}?page=${page}`,
     ),
   detail: (type: string, id: string | number) =>
     getJSON<Detail>(`/detail/${type}/${id}`),
