@@ -60,7 +60,6 @@ export default function Player() {
         </View>
       )}
 
-      {/* top bar */}
       <View style={[styles.topBar, { paddingTop: insets.top + 6 }]} pointerEvents="box-none">
         <Pressable style={styles.closeBtn} onPress={() => router.back()} testID="player-close">
           <Ionicons name="chevron-back" size={22} color={colors.white} />
