@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 import requests
+from datetime import date
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -87,6 +88,8 @@ def normalize_item(item: dict, forced_media: Optional[str] = None) -> Optional[d
     title = item.get("title") or item.get("name") or ""
     kind = "Фильм" if media == "movie" else "Сериал"
     vote = item.get("vote_average") or 0
+    rel = item.get("release_date") or item.get("first_air_date") or ""
+    unreleased = bool(rel) and rel > date.today().isoformat()
     return {
         "id": item.get("id"),
         "media_type": media,
@@ -96,6 +99,7 @@ def normalize_item(item: dict, forced_media: Optional[str] = None) -> Optional[d
         "backdrop": img(IMG_BACKDROP, item.get("backdrop_path")),
         "rating": round(float(vote), 1) if vote else 0,
         "kind": kind,
+        "unreleased": unreleased,
     }
 
 
@@ -130,6 +134,8 @@ COLLECTIONS = [
      "path": "/discover/movie", "media": "movie", "params": {"with_genres": "16", "sort_by": "popularity.desc"}},
     {"key": "sci_fi", "title": "Фантастика", "pg": ["#101430", "#0a0a0a"],
      "path": "/discover/movie", "media": "movie", "params": {"with_genres": "878", "sort_by": "popularity.desc"}},
+    {"key": "upcoming", "title": "Скоро в кино", "pg": ["#e8b64c", "#7a5c00"],
+     "path": "/movie/upcoming", "media": "movie", "params": {}},
 ]
 COLLECTION_MAP = {c["key"]: c for c in COLLECTIONS}
 
@@ -218,6 +224,25 @@ def get_age(detail: dict, media_type: str) -> str:
     return "18+" if detail.get("adult") else "16+"
 
 
+def is_unreleased(d: dict, media_type: str) -> bool:
+    today = date.today().isoformat()
+    status = d.get("status", "") or ""
+    if media_type == "movie":
+        if status in ("Planned", "In Production", "Post Production", "Rumored"):
+            return True
+        rd = d.get("release_date")
+        if not rd:
+            return True
+        return rd > today
+    else:
+        if status in ("Planned", "In Production", "Pilot"):
+            return True
+        fad = d.get("first_air_date")
+        if not fad:
+            return True
+        return fad > today
+
+
 @api_router.get("/detail/{media_type}/{tmdb_id}")
 def detail(media_type: str, tmdb_id: int):
     if media_type not in ("movie", "tv"):
@@ -274,6 +299,7 @@ def detail(media_type: str, tmdb_id: int):
         "age": get_age(d, media_type),
         "seasons": d.get("number_of_seasons", 0) if media_type == "tv" else 0,
         "episodes": d.get("number_of_episodes", 0) if media_type == "tv" else 0,
+        "unreleased": is_unreleased(d, media_type),
         "trailer": trailer,
         "cast": cast,
         "similar": similar,

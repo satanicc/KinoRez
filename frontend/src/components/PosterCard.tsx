@@ -44,11 +44,17 @@ export default function PosterCard({
           colors={["transparent", "rgba(0,0,0,0.55)"]}
           style={styles.scrim}
         />
-        {item.rating > 0 && (
-          <View style={styles.rating}>
-            <Ionicons name="star" size={9} color={colors.gold} />
-            <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+        {item.unreleased ? (
+          <View style={styles.soonBadge}>
+            <Text style={styles.soonText}>Скоро</Text>
           </View>
+        ) : (
+          item.rating > 0 && (
+            <View style={styles.rating}>
+              <Ionicons name="star" size={9} color={colors.gold} />
+              <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
+            </View>
+          )
         )}
       </View>
       <Text style={styles.title} numberOfLines={2}>
@@ -82,6 +88,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   ratingText: { color: colors.white, fontSize: 10.5, fontWeight: "700" },
+  soonBadge: {
+    position: "absolute",
+    top: 6,
+    left: 6,
+    backgroundColor: colors.gold,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
+  },
+  soonText: { color: "#1a1200", fontSize: 9.5, fontWeight: "800", letterSpacing: 0.2 },
   title: {
     color: colors.text,
     fontSize: 12,

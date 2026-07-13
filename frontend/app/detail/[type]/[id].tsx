@@ -169,10 +169,17 @@ export default function Detail() {
 
         {/* actions */}
         <View style={styles.actions}>
-          <Pressable style={styles.watchBtn} onPress={() => setStep("watch")} testID="watch-button">
-            <Ionicons name="play" size={16} color="#000" />
-            <Text style={styles.watchText}>Смотреть</Text>
-          </Pressable>
+          {data.unreleased ? (
+            <View style={styles.statusPill} testID="status-pending">
+              <ActivityIndicator size="small" color={colors.gold} />
+              <Text style={styles.statusText}>В ожидании</Text>
+            </View>
+          ) : (
+            <Pressable style={styles.watchBtn} onPress={() => setStep("watch")} testID="watch-button">
+              <Ionicons name="play" size={16} color="#000" />
+              <Text style={styles.watchText}>Смотреть</Text>
+            </Pressable>
+          )}
           <Pressable style={[styles.bookmarkBtn, bm && { borderColor: colors.accent }]} onPress={onBookmark} testID="bookmark-button">
             <Ionicons name={bm ? "bookmark" : "bookmark-outline"} size={20} color={bm ? colors.accent : colors.white} />
           </Pressable>
@@ -330,6 +337,8 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", gap: 10, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg },
   watchBtn: { flex: 1, backgroundColor: colors.white, borderRadius: 14, paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   watchText: { color: "#000", fontSize: 16, fontWeight: "800" },
+  statusPill: { flex: 1, backgroundColor: colors.card2, borderRadius: 14, paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 },
+  statusText: { color: colors.gold, fontSize: 15, fontWeight: "800" },
   bookmarkBtn: { width: 52, backgroundColor: colors.card2, borderRadius: 14, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "transparent" },
   statsRow: { flexDirection: "row", justifyContent: "space-around", paddingVertical: spacing.lg, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.line, marginHorizontal: spacing.lg },
   stat: { alignItems: "center" },

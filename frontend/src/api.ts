@@ -9,6 +9,7 @@ export type Poster = {
   backdrop: string | null;
   rating: number;
   kind: string;
+  unreleased?: boolean;
 };
 
 export type CastMember = {
@@ -34,6 +35,7 @@ export type Detail = {
   age: string;
   seasons: number;
   episodes: number;
+  unreleased: boolean;
   trailer: string | null;
   cast: CastMember[];
   similar: Poster[];
