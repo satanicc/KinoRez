@@ -1,0 +1,191 @@
+{
+  "app_name": "KinoRez",
+  "personality": "6 Glass / Luxe DARK",
+  "personality_one_liner": "A premium cinematic dark-mode streaming catalog with high-contrast red accents and translucent glass layering.",
+  "color": {
+    "surface": "#0a0a0b",
+    "onSurface": "#f2f2f0",
+    "surfaceSecondary": "#17171a",
+    "onSurfaceSecondary": "#f2f2f0",
+    "surfaceTertiary": "#1e1e22",
+    "onSurfaceTertiary": "#9a9a9e",
+    "surfaceInverse": "#f2f2f0",
+    "onSurfaceInverse": "#0a0a0b",
+    "brand": "#e6402f",
+    "brandPrimary": "#e6402f",
+    "onBrandPrimary": "#ffffff",
+    "brandSecondary": "#ff6b4a",
+    "onBrandSecondary": "#ffffff",
+    "brandTertiary": "#e8b64c",
+    "onBrandTertiary": "#0a0a0b",
+    "success": "#4caf50",
+    "onSuccess": "#ffffff",
+    "warning": "#e8b64c",
+    "onWarning": "#0a0a0b",
+    "error": "#e6402f",
+    "onError": "#ffffff",
+    "info": "#9a9a9e",
+    "onInfo": "#0a0a0b",
+    "border": "#28282c",
+    "borderStrong": "#3a3a40",
+    "divider": "#28282c"
+  },
+  "typography": {
+    "displayFontFamily": "Inter",
+    "textFontFamily": "Inter",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Use generous padding for cinematic feel. No extra margins outside of structural constraints.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 16,
+    "pill": 999
+  },
+  "shadow_tier": "1",
+  "navigation": "bottom_tabs",
+  "icon_set": "Ionicons",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use blur on the bottom floating navigation pill.",
+      "Use blur on bottom-sheet headers and backgrounds.",
+      "Use heavy tint beneath blur (>=75% surface) to maintain text legibility."
+    ],
+    "dont's": [
+      "Do not blur movie posters or dense metadata.",
+      "Do not use blur on primary red CTA buttons."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Home",
+      "purpose": "Discover trending movies and series via a dense poster grid.",
+      "states": {
+        "loading": "Centered dark spinner on #0a0a0b.",
+        "empty": "Empty cinema seats illustration with 'Нет доступного контента'.",
+        "error": "Error message with a red 'Повторить' (Retry) button."
+      },
+      "layout": "Sticky top filter chips (Все/Сериалы/Фильмы/Аниме/Мультфильмы) scrolling horizontally. Below: 3-column movie poster grid using Flexbox (width: (screen - 2*padding - 2*gap) / 3, gap: 8px). Posters are rounded 16px, 2/3 aspect ratio, with rating badge top-right and gradient overlay at bottom."
+    },
+    {
+      "name": "Collections",
+      "purpose": "Browse curated thematic movie collections.",
+      "states": {
+        "loading": "Centered dark spinner.",
+        "empty": "No collections found.",
+        "error": "Failed to load collections."
+      },
+      "layout": "2-column grid of wide tiles. Tiles have subtle dark gradients (surfaceTertiary to surfaceSecondary) with title overlay."
+    },
+    {
+      "name": "Search",
+      "purpose": "Search titles across the catalog.",
+      "states": {
+        "loading": "Skeleton of the 3-column grid.",
+        "empty": "Search icon or empty cinema image with 'Ничего не найдено'.",
+        "error": "Failed to search."
+      },
+      "layout": "Top search input with clear button. Results displayed in a 3-column movie poster grid identical to Home."
+    },
+    {
+      "name": "Detail",
+      "purpose": "Deep dive into a specific movie or series.",
+      "states": {
+        "loading": "Full screen skeleton loading.",
+        "empty": "Content unavailable.",
+        "error": "Failed to fetch details."
+      },
+      "layout": "Large hero backdrop image (full width, height ~45vh) with a heavy linear gradient scrim (transparent to surface Inverse) at the bottom. Overlay Title, meta (genre/year/country), and ratings row. Description text. Horizontal scroll for cast avatars (real images or fallback initials). Similar titles horizontal scroll. Episodes schedule in vertical list."
+    },
+    {
+      "name": "Player",
+      "purpose": "Fullscreen video playback.",
+      "states": {
+        "loading": "Buffering spinner.",
+        "empty": "Video unavailable.",
+        "error": "Playback error."
+      },
+      "layout": "Fullscreen black background. Custom transparent overlay controls: Play/Pause, timeline slider, fullscreen toggle."
+    },
+    {
+      "name": "Profile",
+      "purpose": "User account management and saved content access.",
+      "states": {
+        "loading": "Spinner.",
+        "empty": "Not logged in (redirects to Auth).",
+        "error": "Failed to load profile."
+      },
+      "layout": "User account card at top (surfaceSecondary). Vertical list of menu items (Досмотреть, Закладки, Обновления сериалов) with trailing chevrons."
+    },
+    {
+      "name": "Auth",
+      "purpose": "User login and registration.",
+      "states": {
+        "loading": "Button disabled with spinner.",
+        "empty": "N/A",
+        "error": "Inline text error below inputs."
+      },
+      "layout": "Single column form. Brand logo at top. Email/password inputs. Sticky primary red CTA at bottom (inside KeyboardAvoidingView)."
+    }
+  ],
+  "haptics": {
+    "events": {
+      "tab_press": "selection",
+      "search_fab_press": "light",
+      "movie_card_press": "light",
+      "button_primary_press": "medium",
+      "bookmark_toggle": "success"
+    }
+  },
+  "images": {
+    "hero_backdrop_fallback": {
+      "url": "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwxfHxkYXJrJTIwY2luZW1hdGljJTIwYmFja2Ryb3B8ZW58MHx8fHwxNzgzOTM2ODY2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark cinematic clouds"
+    },
+    "hero_backdrop_fallback_2": {
+      "url": "https://images.unsplash.com/photo-1483982258113-b72862e6cff6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwyfHxkYXJrJTIwY2luZW1hdGljJTIwYmFja2Ryb3B8ZW58MHx8fHwxNzgzOTM2ODY2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark cinematic forest"
+    },
+    "empty_state_cinema": {
+      "url": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxlbXB0eSUyMGNpbmVtYSUyMHNlYXRzJTIwZGFya3xlbnwwfHx8fDE3ODM5MzY4NjZ8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Empty red cinema seats in the dark"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Strictly use the exact colors requested: Background #0a0a0b, Cards #17171a / #1e1e22, Accent Red #e6402f, Gold #e8b64c.",
+    "Movie posters must be rendered with an aspect ratio of 2/3 and 16px border-radius.",
+    "Apply a bottom gradient overlay on posters for text/rating readability.",
+    "The bottom navigation must be a custom floating absolute layout: wrapper (flexDirection: row) containing a blurred translucent pill (flex: 1) and a SEPARATE circular search FAB next to it.",
+    "Implement bottom sheets using @gorhom/bottom-sheet for watch options (voice/season/episode/quality), share, and bookmarks. Use blurred or surfaceSecondary backgrounds.",
+    "Ensure Detail screen hero images have a top-to-bottom vertical linear gradient scrim fading to #0a0a0b at the bottom (opacity minimum 80% to ensure contrast with title).",
+    "All text is Russian, so use standard Inter or system fonts to mimic Apple's SF Pro closely."
+  ]
+}
