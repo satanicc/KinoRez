@@ -1,0 +1,16 @@
+{
+  "name": "kinorez",
+  "version": "1.0.0",
+  "description": "Free movie and TV series streaming application",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "start": "node server/dist/index.js",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
+  }
+}
