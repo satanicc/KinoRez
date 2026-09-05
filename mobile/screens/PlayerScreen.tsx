@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   StatusBar,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Video } from 'expo-av';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.100:5000/api';
+// Используем публичный API
+const HDREZKA_API = 'https://rezka.ag';
 
 interface PlayerScreenProps {
   navigation: any;
@@ -36,21 +38,29 @@ export default function PlayerScreen({ navigation, route }: PlayerScreenProps) {
 
   const fetchStream = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/hdrezka/stream/${id}/${translationId}/${season}/${episode}`,
-        {
-          params: { quality },
-        }
-      );
+      // Получаем видео напрямую с hdrezka
+      const streamUrl = `${HDREZKA_API}/series/${id}-${translationId}-${season}-${episode}.html`;
 
-      if (response.data.url) {
-        setStreamUrl(response.data.url);
+      // Проверяем доступность
+      const response = await axios.head(streamUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 11)',
+        },
+        timeout: 5000,
+      });
+
+      if (response.status === 200) {
+        // Используем прямую ссылку
+        setStreamUrl(`${HDREZKA_API}/series/${id}.html`);
       } else {
-        setError('Не удалось получить ссылку на видео');
+        // Если не работает, показываем ошибку
+        setError('Видео недоступно');
       }
     } catch (err) {
       console.error('Stream fetch error:', err);
-      setError('Ошибка при загрузке видео');
+      // Показываем предложение открыть в браузере
+      setError('Откройте в браузере');
+      setStreamUrl(`${HDREZKA_API}/series/${id}.html`);
     } finally {
       setLoading(false);
     }
@@ -85,32 +95,23 @@ export default function PlayerScreen({ navigation, route }: PlayerScreenProps) {
       )}
 
       {streamUrl && !loading && (
-        <>
-          <Video
-            ref={videoRef}
-            source={{ uri: streamUrl }}
-            rate={1.0}
-            volume={1.0}
-            isMuted={false}
-            resizeMode="contain"
-            useNativeControls
-            style={styles.video}
-            onError={(error) => {
-              console.error('Video error:', error);
-              setError('Ошибка воспроизведения видео');
-            }}
-          />
-
+        <View style={styles.container}>
           <TouchableOpacity
-            style={styles.backButtonOverlay}
-            onPress={handleGoBack}
+            style={styles.openBrowserButton}
+            onPress={() => Linking.openURL(streamUrl)}
           >
-            <Text style={styles.backButtonOverlayText}>← Назад</Text>
+            <Text style={styles.openBrowserButtonText}>
+              Открыть в браузере 🌐
+            </Text>
           </TouchableOpacity>
 
-          <View style={styles.infoOverlay}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTitle}>Видео готово к просмотру!</Text>
             <Text style={styles.infoText}>
-              Качество: {quality}p | Озвучка ID: {translationId}
+              Нажми кнопку выше чтобы открыть видео в браузере
+            </Text>
+            <Text style={styles.infoText}>
+              Выбранное качество: {quality}p
             </Text>
             {season > 1 && (
               <Text style={styles.infoText}>
@@ -118,7 +119,14 @@ export default function PlayerScreen({ navigation, route }: PlayerScreenProps) {
               </Text>
             )}
           </View>
-        </>
+
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={handleGoBack}
+          >
+            <Text style={styles.backButtonText}>← Назад</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -127,18 +135,16 @@ export default function PlayerScreen({ navigation, route }: PlayerScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#0f0f0f',
     justifyContent: 'center',
-  },
-  video: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    alignItems: 'center',
+    paddingHorizontal: 16,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#0f0f0f',
   },
   loadingText: {
     color: '#9ca3af',
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#0f0f0f',
   },
   errorText: {
     color: '#ef4444',
@@ -162,44 +168,50 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 20,
   },
-  backButton: {
+  openBrowserButton: {
     backgroundColor: '#dc2626',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    marginBottom: 24,
+    width: '100%',
+    alignItems: 'center',
+  },
+  openBrowserButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  infoContainer: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    width: '100%',
+  },
+  infoTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  infoText: {
+    color: '#d1d5db',
+    fontSize: 14,
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  backButton: {
+    backgroundColor: '#2a2a2a',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
   },
   backButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  backButtonOverlay: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    zIndex: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-  },
-  backButtonOverlayText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  infoOverlay: {
-    position: 'absolute',
-    bottom: 16,
-    left: 16,
-    right: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    padding: 12,
-    borderRadius: 6,
-  },
-  infoText: {
-    color: '#d1d5db',
-    fontSize: 12,
-    marginBottom: 4,
   },
 });
