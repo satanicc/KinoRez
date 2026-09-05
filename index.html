@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KinoRez — гид по Diablo Immortal</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>KinoRez — гид по Diablo Immortal</h1>
+    <p class="tagline">Прокачка, снаряжение и сборки под твоего персонажа</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-view="view-profile">Профиль</button>
+    <button data-view="view-leveling">Прокачка</button>
+    <button data-view="view-gearing">Снаряжение</button>
+    <button data-view="view-classes">Классы и сборки</button>
+    <button data-view="view-recommendations">Рекомендации</button>
+  </nav>
+
+  <main>
+    <section id="view-profile" class="view active">
+      <div class="card">
+        <h3>Выбери класс</h3>
+        <div id="class-picker" class="class-list"></div>
+      </div>
+
+      <div class="card">
+        <h3>Текущий прогресс</h3>
+        <div class="grid">
+          <div class="field">
+            <label for="level">Уровень персонажа</label>
+            <input type="number" id="level" min="1" max="60" />
+          </div>
+          <div class="field">
+            <label for="resonance">Резонанс (Combat Power)</label>
+            <input type="number" id="resonance" min="0" />
+          </div>
+          <div class="field">
+            <label for="paragon">Уровень Paragon</label>
+            <input type="number" id="paragon" min="0" />
+          </div>
+          <div class="field">
+            <label for="hellTier">Текущий уровень Ада (0, если ещё не открыт)</label>
+            <input type="number" id="hellTier" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Какие универсальные камни у тебя уже есть?</h3>
+        <div id="gem-checkboxes" class="checklist"></div>
+      </div>
+
+      <button class="primary" id="save-profile">Сохранить профиль</button>
+      <span class="save-status" id="save-status"></span>
+    </section>
+
+    <section id="view-leveling" class="view">
+      <div id="leveling-content"></div>
+    </section>
+
+    <section id="view-gearing" class="view">
+      <div id="gearing-content"></div>
+    </section>
+
+    <section id="view-classes" class="view">
+      <div id="class-nav" class="class-list"></div>
+      <div id="class-detail"></div>
+    </section>
+
+    <section id="view-recommendations" class="view">
+      <div id="recommendations-content"></div>
+    </section>
+
+    <div class="disclaimer">
+      Игровые механики (резонанс, пробуждение, ранги камней, названия умений) актуальны на момент
+      написания гида. Diablo Immortal регулярно получает балансные патчи, поэтому точные названия
+      сетовых предметов, легендарок и их бонусы всегда сверяйте с тултипом прямо в игре.
+    </div>
+  </main>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
