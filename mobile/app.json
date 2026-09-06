@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "KinoRez",
+    "name": "КиноРез",
     "slug": "kinorez",
     "version": "1.0.0",
+    "sdkVersion": "57.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",

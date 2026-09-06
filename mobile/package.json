@@ -10,18 +10,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "^49.0.0",
-    "expo-constants": "~14.4.0",
-    "expo-av": "~13.10.0",
-    "expo-linking": "~5.0.0",
-    "expo-status-bar": "~1.6.0",
-    "react": "18.2.0",
-    "react-native": "0.72.4",
-    "react-native-gesture-handler": "~2.14.0",
-    "react-navigation": "^4.4.4",
-    "react-navigation-native": "^4.5.7",
-    "react-navigation-stack": "^2.10.4",
-    "react-navigation-bottom-tabs": "^5.11.11",
+    "expo": "~57.0.0",
+    "expo-constants": "~16.0.0",
+    "expo-av": "~14.0.0",
+    "expo-linking": "~6.0.0",
+    "expo-status-bar": "~1.12.0",
+    "react": "18.3.1",
+    "react-native": "0.74.0",
+    "react-native-gesture-handler": "~2.18.0",
     "axios": "^1.6.0"
   },
   "devDependencies": {
