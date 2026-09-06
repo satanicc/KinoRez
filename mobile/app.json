@@ -1,45 +1,29 @@
 {
   "expo": {
     "name": "КиноРез",
-    "slug": "kinorez",
+    "slug": "kinorez-mobile",
     "version": "1.0.0",
     "sdkVersion": "57.0.0",
+    "platforms": ["android", "ios"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f0f0f"
+      "backgroundColor": "#0a0e27"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTabletMode": true
-    },
+    "assetBundlePatterns": ["**/*"],
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0f0f"
-      },
-      "permissions": [
-        "android.permission.INTERNET"
-      ]
+      "permissions": ["android.permission.INTERNET"],
+      "package": "com.kinorez.mobile"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "expo-av",
-        {
-          "microphonePermission": "Allow KinoRez to access your microphone."
-        }
-      ]
-    ]
+    "ios": {
+      "bundleIdentifier": "com.kinorez.mobile",
+      "supportsTabletMode": true
+    }
   }
 }
